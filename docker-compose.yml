@@ -1,0 +1,132 @@
+version: '3.8'
+
+services:
+  influxdb:
+    image: influxdb:2.7
+    container_name: influxdb
+    ports:
+      - "8086:8086"
+    volumes:
+      - influxdb-data:/var/lib/influxdb2
+      - influxdb-config:/etc/influxdb2
+      - ./scripts/init/init-buckets.sh:/docker-entrypoint-initdb.d/init-buckets.sh
+      - ./scripts/init/init-influxdb.sh:/docker-entrypoint-initdb.d/init-influxdb.sh
+    environment:
+      - DOCKER_INFLUXDB_INIT_MODE=setup
+      - DOCKER_INFLUXDB_INIT_USERNAME=${INFLUXDB_USERNAME}
+      - DOCKER_INFLUXDB_INIT_PASSWORD=${INFLUXDB_PASSWORD}
+      - DOCKER_INFLUXDB_INIT_ORG=${INFLUXDB_ORG}
+      - DOCKER_INFLUXDB_INIT_BUCKET=${INFLUXDB_BUCKET}
+      - DOCKER_INFLUXDB_INIT_ADMIN_TOKEN=${DOCKER_INFLUXDB_INIT_ADMIN_TOKEN}
+      - INFLUXDB_BUCKET_2=${INFLUXDB_BUCKET_2}
+    restart: unless-stopped
+    networks:
+      - iot-net
+    healthcheck:
+      test: ["CMD", "influx", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    ports:
+      - "3000:3000"
+    volumes:
+      - grafana-data:/var/lib/grafana
+      - ./grafana/provisioning:/etc/grafana/provisioning
+    environment:
+      - INFLUXDB_TOKEN=${DOCKER_INFLUXDB_INIT_ADMIN_TOKEN}
+      - GF_SECURITY_ADMIN_USER=${GRAFANA_ADMIN_USER:-admin}
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_ADMIN_PASSWORD:-admin}
+      - GF_INSTALL_PLUGINS=
+      - GF_SERVER_ROOT_URL=http://localhost:3000
+    restart: unless-stopped
+    networks:
+      - iot-net
+    depends_on:
+      influxdb:
+        condition: service_healthy
+
+  nodered:
+    build:
+      context: .
+      dockerfile: nodered/Dockerfile.nodered
+    container_name: nodered
+    ports:
+      - "1880:1880"
+    volumes:
+      - nodered-data:/data
+    environment:
+      - TZ=Europe/Madrid
+    restart: unless-stopped
+    networks:
+      - iot-net
+    depends_on:
+      influxdb:
+        condition: service_healthy
+        
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: sqlserver
+    ports:
+      - "1433:1433"
+    volumes:
+      - sqlserver-data:/var/opt/mssql
+      - ./sqlserver/init-scripts:/docker-entrypoint-initdb.d
+      - ./sqlserver/init.sh:/usr/local/bin/init.sh
+    environment:
+      - ACCEPT_EULA=Y
+      - SA_PASSWORD=${SQL_SERVER_SA_PASSWORD}
+      - MSSQL_PID=Developer
+    restart: unless-stopped
+    networks:
+      - iot-net
+    command: >
+      /bin/bash -c "
+      /opt/mssql/bin/sqlservr &
+      sleep 30 &&
+      /usr/local/bin/init.sh &&
+      wait
+      "
+    healthcheck:
+      test: ["CMD-SHELL", "/opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P '${SQL_SERVER_SA_PASSWORD}' -C -Q 'SELECT 1' || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      # Se añade un período de gracia para que el servidor arranque antes del primer chequeo
+      start_period: 30s
+
+  riot-collector:
+    build:
+      context: ./src
+      dockerfile: Dockerfile
+    container_name: riot-collector
+    environment:
+      - RIOT_API_KEY=${RIOT_API_KEY}
+      - RIOT_GAME_NAME=${RIOT_GAME_NAME}
+      - RIOT_TAG_LINE=${RIOT_TAG_LINE}
+      - RIOT_ROUTING=${RIOT_ROUTING}
+      - INFLUXDB_URL=http://influxdb:8086
+      - INFLUXDB_TOKEN=${DOCKER_INFLUXDB_INIT_ADMIN_TOKEN}
+      - INFLUXDB_ORG=${INFLUXDB_ORG}
+      - INFLUXDB_BUCKET=${INFLUXDB_BUCKET}
+    networks:
+      - iot-net
+    depends_on:
+      influxdb:
+        condition: service_healthy
+    profiles:
+      - manual
+
+volumes:
+  influxdb-data:
+  influxdb-config:
+  nodered-data:
+  grafana-data:
+  sqlserver-data:
+
+networks:
+  iot-net:
+    driver: bridge
