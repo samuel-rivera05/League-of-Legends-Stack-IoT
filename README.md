@@ -1,5 +1,7 @@
 # Stack IoT completo con Docker: Node-RED + SQL Server + InfluxDB + Grafana + Riot Collector
 
+![Imagen del proyecto](images/image.jpg)
+
 Este proyecto despliega un entorno completo de IoT y análisis de datos utilizando contenedores Docker.  
 Incluye servicios de base de datos, visualización, automatización y un recolector de datos de Riot Games.
 
