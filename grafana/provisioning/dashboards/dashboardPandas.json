@@ -1,0 +1,947 @@
+{
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": {
+          "type": "grafana",
+          "uid": "-- Grafana --"
+        },
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "type": "dashboard"
+      }
+    ]
+  },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 0,
+  "id": 25,
+  "links": [],
+  "panels": [
+    {
+      "datasource": {
+        "type": "influxdb",
+        "name": "InfluxDB"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "fillOpacity": 80,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineWidth": 1,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": 0
+              }
+            ]
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "MIDDLE"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "palette-classic-by-name"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 10,
+        "x": 0,
+        "y": 0
+      },
+      "id": 8,
+      "options": {
+        "barRadius": 0,
+        "barWidth": 0.97,
+        "fullHighlight": false,
+        "groupWidth": 0.7,
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "orientation": "auto",
+        "showValue": "auto",
+        "stacking": "none",
+        "tooltip": {
+          "hideZeros": false,
+          "mode": "single",
+          "sort": "none"
+        },
+        "xTickLabelRotation": 0,
+        "xTickLabelSpacing": 0
+      },
+      "pluginVersion": "12.1.1",
+      "targets": [
+        {
+          "query": "// Define el origen de los datos y el rango de tiempo.\nfrom(bucket: \"Reto0Pandas\")\n\t|> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n    |> filter(fn: (r) => r[\"_measurement\"] == \"lol_matches\")\n    |> filter(fn: (r) => r[\"jugador\"] == \"Messi goat\")\n    |> filter(fn: (r) => r[\"_field\"] == \"kills\")\n    |> group(columns: [\"role\"])\n    |> aggregateWindow(every: 1d, fn: mean, createEmpty: false)",
+          "refId": "A"
+        }
+      ],
+      "title": "Media Kill por Role",
+      "type": "barchart"
+    },
+    {
+      "datasource": {
+        "type": "influxdb",
+        "name": "InfluxDB"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "fillOpacity": 80,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineWidth": 1,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": 0
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Lose"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "DERROTA"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Win"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "VICTORIA"
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 12,
+        "x": 11,
+        "y": 0
+      },
+      "id": 7,
+      "options": {
+        "barRadius": 0,
+        "barWidth": 0.97,
+        "fullHighlight": false,
+        "groupWidth": 0.7,
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "orientation": "auto",
+        "showValue": "auto",
+        "stacking": "none",
+        "tooltip": {
+          "hideZeros": false,
+          "mode": "single",
+          "sort": "none"
+        },
+        "xTickLabelRotation": 0,
+        "xTickLabelSpacing": 0
+      },
+      "pluginVersion": "12.1.1",
+      "targets": [
+        {
+          "query": "// Define el origen de los datos: el bucket \"Reto0Pandas\" y el rango de tiempo.\nfrom(bucket: \"Reto0Pandas\")\n\t|> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n    \n    // Filtra los datos para obtener solo los de la medida \"lol_matches\".\n    |> filter(fn: (r) => r[\"_measurement\"] == \"lol_matches\")\n    |> filter(fn: (r) => r[\"jugador\"] == \"Messi goat\")\n\n    // Selecciona un único campo por partida para asegurar que cada partida se cuente una sola vez.\n    |> filter(fn: (r) => r[\"_field\"] == \"kills\")\n\n    // Agrupa todos los datos basándose únicamente en el campo \"resultado\" (\"Win\" o \"Lose\").\n    // Esto es crucial para ignorar los campeones y tener solo dos series de datos.\n    |> group(columns: [\"resultado\"])\n\n    // Agrupa los resultados en ventanas de 1 día y cuenta cuántas partidas hay en cada grupo (victorias y derrotas).\n    |> aggregateWindow(every: 1d, fn: count, createEmpty: false)",
+          "refId": "A"
+        }
+      ],
+      "title": "Victorias y derrotas",
+      "type": "barchart"
+    },
+    {
+      "datasource": {
+        "type": "influxdb",
+        "name": "InfluxDB"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "barWidthFactor": 0.6,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "displayName": "NUmero de Partidas",
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": 0
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "none"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 10,
+        "x": 0,
+        "y": 7
+      },
+      "id": 6,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "hideZeros": false,
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "12.1.1",
+      "targets": [
+        {
+          "query": "from(bucket: \"Reto0Pandas\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"lol_matches\")\n  |> filter(fn: (r) => r[\"jugador\"] == \"Messi goat\")\n  \n  // 1. Aislamos una fila por cada partida para no contar de más\n  |> filter(fn: (r) => r[\"_field\"] == \"kills\") \n  \n  // 2. ¡EL PASO CLAVE! Forzamos que todos los campeones se traten como un único grupo\n  |> group() \n  \n  // 3. Ahora sí, contamos las filas (partidas) por día\n  |> aggregateWindow(every: 1d, fn: count, createEmpty: false)",
+          "refId": "A"
+        }
+      ],
+      "title": "Numero de Partidas diarias",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "influxdb",
+        "name": "InfluxDB"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "barWidthFactor": 0.6,
+            "drawStyle": "bars",
+            "fillOpacity": 47,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": 0
+              },
+              {
+                "color": "yellow",
+                "value": 12
+              },
+              {
+                "color": "orange",
+                "value": 15
+              }
+            ]
+          },
+          "unit": "currencyEUR"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Value"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "ORO"
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 11,
+        "y": 7
+      },
+      "id": 4,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "hideZeros": false,
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "12.1.1",
+      "targets": [
+        {
+          "query": "from(bucket: \"Reto0Pandas\")\n\t|> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"lol_matches\")\n  |> filter(fn: (r) => r[\"_field\"] == \"goldEarned\")\n  |> filter(fn: (r) => r[\"jugador\"] == \"Messi goat\")\n  |> group() // Combina los datos de todos los campeones en una sola línea\n  |> aggregateWindow(every: 1d, fn: mean, createEmpty: false) // Agrupa los datos por día y calcula la media",
+          "refId": "A"
+        }
+      ],
+      "title": "ORO MEDIO CONSEGUIDO",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "influxdb",
+        "name": "InfluxDB"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds",
+            "seriesBy": "last"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "barWidthFactor": 0.6,
+            "drawStyle": "line",
+            "fillOpacity": 14,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "smooth",
+            "lineWidth": 3,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "purple",
+                "value": 0
+              },
+              {
+                "color": "#EAB839",
+                "value": 5
+              },
+              {
+                "color": "#6ED0E0",
+                "value": 10
+              },
+              {
+                "color": "#EF843C",
+                "value": 15
+              },
+              {
+                "color": "#E24D42",
+                "value": 20
+              }
+            ]
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Value"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "VISION"
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 10,
+        "x": 0,
+        "y": 15
+      },
+      "id": 5,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "hideZeros": false,
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "12.1.1",
+      "targets": [
+        {
+          "query": "from(bucket: \"Reto0Pandas\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"lol_matches\")\n  |> filter(fn: (r) => r[\"_field\"] == \"visionScore\")\n  |> filter(fn: (r) => r[\"jugador\"] == \"Messi goat\")\n  |> group() // Elimina la agrupación por campeón y junta todo en una sola tabla.\n  |> aggregateWindow(every: 1d, fn: mean, createEmpty: false) // Ahora calcula la media de esa única tabla.",
+          "refId": "A"
+        }
+      ],
+      "title": "MEDIA VISION",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "influxdb",
+        "name": "InfluxDB"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            }
+          },
+          "displayName": "${__field.labels.campeon}",
+          "mappings": []
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "_value {_start=\"2025-09-27 00:00:00 +0000 UTC\", _stop=\"2025-10-06 23:59:59 +0000 UTC\", campeon=\"Jax\"}"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "JAX"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "_value {_start=\"2025-09-27 00:00:00 +0000 UTC\", _stop=\"2025-10-06 23:59:59 +0000 UTC\", campeon=\"Kennen\"}"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "KENNEN"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "_value {_start=\"2025-09-27 00:00:00 +0000 UTC\", _stop=\"2025-10-06 23:59:59 +0000 UTC\", campeon=\"Malphite\"}"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "MALPHITE"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "_value {_start=\"2025-09-27 00:00:00 +0000 UTC\", _stop=\"2025-10-06 23:59:59 +0000 UTC\", campeon=\"Olaf\"}"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "OLAF"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "_value {_start=\"2025-09-27 00:00:00 +0000 UTC\", _stop=\"2025-10-06 23:59:59 +0000 UTC\", campeon=\"Ornn\"}"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "ORNN"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "_value {_start=\"2025-09-27 00:00:00 +0000 UTC\", _stop=\"2025-10-06 23:59:59 +0000 UTC\", campeon=\"Singed\"}"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "SINGED"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "_value {_start=\"2025-09-27 00:00:00 +0000 UTC\", _stop=\"2025-10-06 23:59:59 +0000 UTC\", campeon=\"Tryndamere\"}"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "TRYNDAMERE"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "_value {_start=\"2025-09-27 00:00:00 +0000 UTC\", _stop=\"2025-10-06 23:59:59 +0000 UTC\", campeon=\"Yasuo\"}"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "YASUO"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "_value {_start=\"2025-09-27 00:00:00 +0000 UTC\", _stop=\"2025-10-06 23:59:59 +0000 UTC\", campeon=\"Yone\"}"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "YONE"
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 11,
+        "w": 6,
+        "x": 11,
+        "y": 15
+      },
+      "id": 3,
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "pieType": "pie",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "tooltip": {
+          "hideZeros": false,
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "12.1.1",
+      "targets": [
+        {
+          "query": "from(bucket: \"Reto0Pandas\")\n\t|> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"lol_matches\")\n  |> filter(fn: (r) => r[\"_field\"] == \"deaths\")\n  |> filter(fn: (r) => r[\"jugador\"] == \"Messi goat\")\n  |> group(columns: [\"campeon\"])  \n  |> sum()",
+          "refId": "A"
+        }
+      ],
+      "title": "MUERTES",
+      "type": "piechart"
+    },
+    {
+      "datasource": {
+        "type": "influxdb",
+        "name": "InfluxDB"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            }
+          },
+          "displayName": "${__field.labels.campeon}",
+          "mappings": []
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "_value {_start=\"2025-09-27 00:00:00 +0000 UTC\", _stop=\"2025-10-06 23:59:59 +0000 UTC\", campeon=\"Jax\"}"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "JAX"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "_value {_start=\"2025-09-27 00:00:00 +0000 UTC\", _stop=\"2025-10-06 23:59:59 +0000 UTC\", campeon=\"Kennen\"}"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "KENNEN"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "_value {_start=\"2025-09-27 00:00:00 +0000 UTC\", _stop=\"2025-10-06 23:59:59 +0000 UTC\", campeon=\"Malphite\"}"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "MALPHITE"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "_value {_start=\"2025-09-27 00:00:00 +0000 UTC\", _stop=\"2025-10-06 23:59:59 +0000 UTC\", campeon=\"Ornn\"}"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "ORNN"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "_value {_start=\"2025-09-27 00:00:00 +0000 UTC\", _stop=\"2025-10-06 23:59:59 +0000 UTC\", campeon=\"Singed\"}"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "SINGED"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "_value {_start=\"2025-09-27 00:00:00 +0000 UTC\", _stop=\"2025-10-06 23:59:59 +0000 UTC\", campeon=\"Tryndamere\"}"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "TRYNDAMERE"
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 11,
+        "w": 6,
+        "x": 17,
+        "y": 15
+      },
+      "id": 1,
+      "options": {
+        "displayLabels": [],
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true,
+          "values": []
+        },
+        "pieType": "pie",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "tooltip": {
+          "hideZeros": false,
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "12.1.1",
+      "targets": [
+        {
+          "datasource": {
+            "type": "influxdb",
+            "name": "InfluxDB"
+          },
+          "query": "from(bucket: \"Reto0Pandas\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"lol_matches\")\n  |> filter(fn: (r) => r[\"_field\"] == \"kills\")\n  |> filter(fn: (r) => r[\"jugador\"] == \"Messi goat\")\n  |> group(columns: [\"campeon\"])\n  |> sum()",
+          "refId": "A"
+        }
+      ],
+      "title": "KILL POR PJ",
+      "type": "piechart"
+    },
+    {
+      "datasource": {
+        "type": "influxdb",
+        "name": "InfluxDB"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "displayName": "${__field.labels.campeon}",
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": 0
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "m"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "_value {_start=\"2025-09-27 00:00:00 +0000 UTC\", _stop=\"2025-10-06 23:59:59 +0000 UTC\", campeon=\"Jax\"}"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "JAX"
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 10,
+        "x": 0,
+        "y": 23
+      },
+      "id": 2,
+      "options": {
+        "minVizHeight": 75,
+        "minVizWidth": 75,
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showThresholdLabels": false,
+        "showThresholdMarkers": true,
+        "sizing": "auto"
+      },
+      "pluginVersion": "12.1.1",
+      "targets": [
+        {
+          "query": "from(bucket: \"Reto0Pandas\")\n\t|> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"lol_matches\")\n  |> filter(fn: (r) => r[\"_field\"] == \"duracion_min\")\n  |> filter(fn: (r) => r[\"jugador\"] == \"Messi goat\")\n  |> group(columns: [\"campeon\"])  // Agrupa los resultados por cada campeón\n  |> mean()                     // Calcula la media para cada grupo (campeón)",
+          "refId": "A"
+        }
+      ],
+      "title": "DURACION MEDIA",
+      "type": "gauge"
+    }
+  ],
+  "preload": false,
+  "refresh": "1d",
+  "schemaVersion": 41,
+  "tags": [],
+  "templating": {
+    "list": []
+  },
+  "time": {
+    "from": "2025-09-27T00:00:00.000Z",
+    "to": "now"
+  },
+  "timepicker": {},
+  "timezone": "browser",
+  "title": "RETO0 PANDAS",
+  "uid": "5ca89c45-06d6-4a5a-8740-30db862e8ea5",
+  "version": 4
+}
