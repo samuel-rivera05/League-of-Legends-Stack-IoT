@@ -1,0 +1,52 @@
+# Variables de entorno con datos sensibles
+# Ignorar archivos de variables de entorno locales
+.env
+.env.*.local
+
+# Directorios de datos de Docker
+influxdb-data/
+grafana-data/
+nodered-data/
+data/
+
+# Archivos temporales
+*.tmp
+*.swp
+*.swo
+*~
+
+# Archivos de sistema
+.DS_Store
+Thumbs.db
+
+# IDEs
+.vscode/
+.idea/
+*.iml
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+env/
+*.egg-info/
+
+# Node-RED (si tienes archivos locales)
+node_modules/
+flows_*.json.backup
+
+# Grafana (datos locales)
+grafana/data/
+grafana/*.db
+
+# Tokens generados automáticamente
+admin-token.txt
+api-token.txt
+token.txt
+
+# Backups
+backup/
+*.backup
