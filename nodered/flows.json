@@ -1,0 +1,606 @@
+[
+    {
+        "id": "d1a571756048499d",
+        "type": "tab",
+        "label": "Riot API Top 1",
+        "disabled": false,
+        "info": ""
+    },
+    {
+        "id": "f111c8be32435494",
+        "type": "inject",
+        "z": "d1a571756048499d",
+        "name": "Iniciar Flujo",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "600",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 150,
+        "y": 100,
+        "wires": [
+            [
+                "1753df665fc95e2d"
+            ]
+        ]
+    },
+    {
+        "id": "1753df665fc95e2d",
+        "type": "http request",
+        "z": "d1a571756048499d",
+        "name": "",
+        "method": "GET",
+        "ret": "obj",
+        "paytoqs": "ignore",
+        "url": "https://euw1.api.riotgames.com/lol/league/v4/grandmasterleagues/by-queue/RANKED_SOLO_5x5?api_key=RGAPI-f7dd5190-fd1b-4ea2-9da4-f43488c50abc",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "insecureHTTPParser": false,
+        "authType": "",
+        "senderr": false,
+        "headers": [],
+        "x": 350,
+        "y": 100,
+        "wires": [
+            [
+                "f0570a0a0ea57bbf"
+            ]
+        ]
+    },
+    {
+        "id": "f0570a0a0ea57bbf",
+        "type": "function",
+        "z": "d1a571756048499d",
+        "name": "Obtener PUUID",
+        "func": "\n\n// Obtiene la lista de jugadores del payload\nconst entries = msg.payload.entries;\n\nif (!Array.isArray(entries) || entries.length === 0) {\n    node.error(\"La propiedad 'entries' no es un array o está vacío.\");\n    return null; // Detiene el flujo si no hay datos\n}\n\n\nconst topPlayer = entries[0];\n\n// Devolvemos un único mensaje con el PUUID del jugador\nreturn { payload: topPlayer.puuid };",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 560,
+        "y": 100,
+        "wires": [
+            [
+                "6adbff16b9d9a6b9"
+            ]
+        ]
+    },
+    {
+        "id": "6adbff16b9d9a6b9",
+        "type": "http request",
+        "z": "d1a571756048499d",
+        "name": "",
+        "method": "GET",
+        "ret": "obj",
+        "paytoqs": "ignore",
+        "url": "https://europe.api.riotgames.com/riot/account/v1/accounts/by-puuid/{{payload}}?api_key=RGAPI-f7dd5190-fd1b-4ea2-9da4-f43488c50abc",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "insecureHTTPParser": false,
+        "authType": "",
+        "senderr": false,
+        "headers": [],
+        "x": 770,
+        "y": 100,
+        "wires": [
+            [
+                "0c43a4044fa8672c",
+                "737e7b1da6f1cadf"
+            ]
+        ]
+    },
+    {
+        "id": "0c43a4044fa8672c",
+        "type": "debug",
+        "z": "d1a571756048499d",
+        "name": "debug 14",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 780,
+        "y": 40,
+        "wires": []
+    },
+    {
+        "id": "737e7b1da6f1cadf",
+        "type": "function",
+        "z": "d1a571756048499d",
+        "name": "Guardar Nombre y Preparar PUUID",
+        "func": "// Guardamos la información importante del jugador en un objeto aparte\n// para poder usarla más tarde en el flujo.\nmsg.playerInfo = {\n    puuid: msg.payload.puuid,\n    gameName: msg.payload.gameName,\n    tagLine: msg.payload.tagLine\n};\n\n// El siguiente nodo 'http request' solo necesita el PUUID en su URL.\n// Por eso, reemplazamos el payload para que contenga únicamente esa cadena de texto.\nmsg.payload = msg.payload.puuid;\n\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1060,
+        "y": 100,
+        "wires": [
+            [
+                "33dcaa546da2f909"
+            ]
+        ]
+    },
+    {
+        "id": "33dcaa546da2f909",
+        "type": "http request",
+        "z": "d1a571756048499d",
+        "name": "",
+        "method": "GET",
+        "ret": "obj",
+        "paytoqs": "ignore",
+        "url": "https://europe.api.riotgames.com/lol/match/v5/matches/by-puuid/{{payload}}/ids?count=2&api_key=RGAPI-f7dd5190-fd1b-4ea2-9da4-f43488c50abc",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "insecureHTTPParser": false,
+        "authType": "",
+        "senderr": false,
+        "headers": [],
+        "x": 110,
+        "y": 220,
+        "wires": [
+            [
+                "369b49660c4c2bcd",
+                "ab5025dab7c94431"
+            ]
+        ]
+    },
+    {
+        "id": "369b49660c4c2bcd",
+        "type": "debug",
+        "z": "d1a571756048499d",
+        "name": "debug 12",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 120,
+        "y": 280,
+        "wires": []
+    },
+    {
+        "id": "ab5025dab7c94431",
+        "type": "function",
+        "z": "d1a571756048499d",
+        "name": "Desglosar Partidas",
+        "func": "// Recordamos la información del jugador para no perderla.\nconst playerInfo = msg.playerInfo;\n\n// Obtenemos el array de IDs de partidas del payload.\nconst matchIds = msg.payload;\n\n// Creamos un array vacío para guardar los nuevos mensajes.\nconst newMessages = [];\n\n// Recorremos cada ID de partida en el array.\nfor (const matchId of matchIds) {\n    // Para cada ID, creamos un mensaje completamente nuevo.\n    newMessages.push({\n        // El payload de este nuevo mensaje será el ID de la partida.\n        payload: matchId,\n\n        // ¡MUY IMPORTANTE! Adjuntamos la información del jugador\n        // a cada uno de los nuevos mensajes para poder usarla más adelante.\n        playerInfo: playerInfo\n    });\n}\n\n// Al devolver un array que contiene otros mensajes,\n// Node-RED los enviará uno por uno por la salida del nodo.\nreturn [newMessages];",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 350,
+        "y": 220,
+        "wires": [
+            [
+                "febeb3005de6c8d9"
+            ]
+        ]
+    },
+    {
+        "id": "febeb3005de6c8d9",
+        "type": "http request",
+        "z": "d1a571756048499d",
+        "name": "",
+        "method": "GET",
+        "ret": "obj",
+        "paytoqs": "ignore",
+        "url": "https://europe.api.riotgames.com/lol/match/v5/matches/{{payload}}?api_key=RGAPI-f7dd5190-fd1b-4ea2-9da4-f43488c50abc",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "insecureHTTPParser": false,
+        "authType": "",
+        "senderr": false,
+        "headers": [],
+        "x": 570,
+        "y": 220,
+        "wires": [
+            [
+                "1a0079daef71ac7f",
+                "c591a0f7725f0a17"
+            ]
+        ]
+    },
+    {
+        "id": "1a0079daef71ac7f",
+        "type": "debug",
+        "z": "d1a571756048499d",
+        "name": "debug 13",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 580,
+        "y": 280,
+        "wires": []
+    },
+    {
+        "id": "c591a0f7725f0a17",
+        "type": "function",
+        "z": "d1a571756048499d",
+        "name": "function 10",
+        "func": "// Recuperamos la información del jugador que guardamos al principio del flujo.\nconst infoJugador = msg.playerInfo;\n\n// Buscamos los datos específicos del jugador dentro de los detalles de la partida.\n// La variable 'participant' contendrá todas las estadísticas de nuestro jugador en esa partida.\nconst participante = msg.payload.info.participants.find(p => p.puuid === infoJugador.puuid);\n\n// Si por alguna razón no encontramos al participante, detenemos el flujo para evitar errores.\nif (!participante) {\n    node.error(\"No se encontraron los datos del participante en esta partida.\");\n    return null;\n}\n\n// Preparamos el mensaje final para enviarlo al nodo de InfluxDB.\n// El formato debe ser un array con dos objetos: el primero para los datos (fields)\n// y el segundo para las etiquetas (tags).\nmsg.payload = [\n    {\n        // === CAMPOS (FIELDS) ===\n        // Aquí van los datos numéricos que quieres medir y sobre los que harás cálculos.\n        asesinatos: participante.kills,\n        muertes: participante.deaths,\n        asistencias: participante.assists,\n        danoTotalACampeones: participante.totalDamageDealtToChampions,\n        oroGanado: participante.goldEarned,\n        puntuacionDeVision: participante.visionScore,\n        victoria: participante.win // Esto será un valor booleano (true o false)\n    },\n    {\n        // === ETIQUETAS (TAGS) ===\n \n        nombreInvocador: infoJugador.gameName,\n        tagInvocador: infoJugador.tagLine,\n        campeon: participante.championName,\n        rol: participante.role,\n        linea: participante.lane\n    }\n];\n\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 770,
+        "y": 220,
+        "wires": [
+            [
+                "16ef890ba602d940",
+                "bff8aa47d69ebc67"
+            ]
+        ]
+    },
+    {
+        "id": "16ef890ba602d940",
+        "type": "debug",
+        "z": "d1a571756048499d",
+        "name": "debug 10",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 960,
+        "y": 220,
+        "wires": []
+    },
+    {
+        "id": "bff8aa47d69ebc67",
+        "type": "influxdb out",
+        "z": "d1a571756048499d",
+        "influxdb": "1c5133f170702cb3",
+        "name": "Envio",
+        "measurement": "Top1",
+        "precision": "",
+        "retentionPolicy": "",
+        "database": "",
+        "precisionV18FluxV20": "ms",
+        "retentionPolicyV18Flux": "",
+        "org": "Somorrostro",
+        "bucket": "reto0Node",
+        "x": 940,
+        "y": 300,
+        "wires": []
+    },
+    {
+        "id": "ff12309a75af54dc",
+        "type": "inject",
+        "z": "d1a571756048499d",
+        "name": "Iniciar Flujo",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "600",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 150,
+        "y": 440,
+        "wires": [
+            [
+                "80813fd922f85e5c"
+            ]
+        ]
+    },
+    {
+        "id": "80813fd922f85e5c",
+        "type": "http request",
+        "z": "d1a571756048499d",
+        "name": "",
+        "method": "GET",
+        "ret": "obj",
+        "paytoqs": "ignore",
+        "url": "https://euw1.api.riotgames.com/lol/league/v4/grandmasterleagues/by-queue/RANKED_SOLO_5x5?api_key=RGAPI-f7dd5190-fd1b-4ea2-9da4-f43488c50abc",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "insecureHTTPParser": false,
+        "authType": "",
+        "senderr": false,
+        "headers": [],
+        "x": 350,
+        "y": 440,
+        "wires": [
+            [
+                "732674537a3d56cc"
+            ]
+        ]
+    },
+    {
+        "id": "732674537a3d56cc",
+        "type": "function",
+        "z": "d1a571756048499d",
+        "name": "Obtener PUUID",
+        "func": "\n\n// Obtiene la lista de jugadores del payload\nconst entries = msg.payload.entries;\n\n// Verifica si 'entries' es un array válido y no está vacío\nif (!Array.isArray(entries) || entries.length === 1) {\n    node.error(\"La propiedad 'entries' no es un array o está vacío.\");\n    return null; // Detiene el flujo si no hay datos\n}\n\n\nconst topPlayer = entries[1];\n\n// Devolvemos un único mensaje con el PUUID del jugador\nreturn { payload: topPlayer.puuid };",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 560,
+        "y": 440,
+        "wires": [
+            [
+                "0e7ee4526e61c034"
+            ]
+        ]
+    },
+    {
+        "id": "0e7ee4526e61c034",
+        "type": "http request",
+        "z": "d1a571756048499d",
+        "name": "",
+        "method": "GET",
+        "ret": "obj",
+        "paytoqs": "ignore",
+        "url": "https://europe.api.riotgames.com/riot/account/v1/accounts/by-puuid/{{payload}}?api_key=RGAPI-f7dd5190-fd1b-4ea2-9da4-f43488c50abc",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "insecureHTTPParser": false,
+        "authType": "",
+        "senderr": false,
+        "headers": [],
+        "x": 770,
+        "y": 440,
+        "wires": [
+            [
+                "fb9d1e4b4d45a207",
+                "7640c67ab80fd315"
+            ]
+        ]
+    },
+    {
+        "id": "fb9d1e4b4d45a207",
+        "type": "debug",
+        "z": "d1a571756048499d",
+        "name": "debug 11",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 780,
+        "y": 380,
+        "wires": []
+    },
+    {
+        "id": "7640c67ab80fd315",
+        "type": "function",
+        "z": "d1a571756048499d",
+        "name": "Guardar Nombre y Preparar PUUID",
+        "func": "// Guardamos la información importante del jugador en un objeto aparte\n// para poder usarla más tarde en el flujo.\nmsg.playerInfo = {\n    puuid: msg.payload.puuid,\n    gameName: msg.payload.gameName,\n    tagLine: msg.payload.tagLine\n};\n\n// El siguiente nodo 'http request' solo necesita el PUUID en su URL.\n// Por eso, reemplazamos el payload para que contenga únicamente esa cadena de texto.\nmsg.payload = msg.payload.puuid;\n\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1060,
+        "y": 440,
+        "wires": [
+            [
+                "fd423ade702d8ca1"
+            ]
+        ]
+    },
+    {
+        "id": "fd423ade702d8ca1",
+        "type": "http request",
+        "z": "d1a571756048499d",
+        "name": "",
+        "method": "GET",
+        "ret": "obj",
+        "paytoqs": "ignore",
+        "url": "https://europe.api.riotgames.com/lol/match/v5/matches/by-puuid/{{payload}}/ids?count=2&api_key=RGAPI-f7dd5190-fd1b-4ea2-9da4-f43488c50abc",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "insecureHTTPParser": false,
+        "authType": "",
+        "senderr": false,
+        "headers": [],
+        "x": 110,
+        "y": 560,
+        "wires": [
+            [
+                "552e8a9d775eec61",
+                "8ece434f3573e1ea"
+            ]
+        ]
+    },
+    {
+        "id": "552e8a9d775eec61",
+        "type": "debug",
+        "z": "d1a571756048499d",
+        "name": "debug 12",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 120,
+        "y": 620,
+        "wires": []
+    },
+    {
+        "id": "8ece434f3573e1ea",
+        "type": "function",
+        "z": "d1a571756048499d",
+        "name": "Desglosar Partidas",
+        "func": "// Recordamos la información del jugador para no perderla.\nconst playerInfo = msg.playerInfo;\n\n// Obtenemos el array de IDs de partidas del payload.\nconst matchIds = msg.payload;\n\n// Creamos un array vacío para guardar los nuevos mensajes.\nconst newMessages = [];\n\n// Recorremos cada ID de partida en el array.\nfor (const matchId of matchIds) {\n    // Para cada ID, creamos un mensaje completamente nuevo.\n    newMessages.push({\n        // El payload de este nuevo mensaje será el ID de la partida.\n        payload: matchId,\n\n        // ¡MUY IMPORTANTE! Adjuntamos la información del jugador\n        // a cada uno de los nuevos mensajes para poder usarla más adelante.\n        playerInfo: playerInfo\n    });\n}\n\n// Al devolver un array que contiene otros mensajes,\n// Node-RED los enviará uno por uno por la salida del nodo.\nreturn [newMessages];",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 350,
+        "y": 560,
+        "wires": [
+            [
+                "35b2ac0e2417982a"
+            ]
+        ]
+    },
+    {
+        "id": "35b2ac0e2417982a",
+        "type": "http request",
+        "z": "d1a571756048499d",
+        "name": "",
+        "method": "GET",
+        "ret": "obj",
+        "paytoqs": "ignore",
+        "url": "https://europe.api.riotgames.com/lol/match/v5/matches/{{payload}}?api_key=RGAPI-f7dd5190-fd1b-4ea2-9da4-f43488c50abc",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "insecureHTTPParser": false,
+        "authType": "",
+        "senderr": false,
+        "headers": [],
+        "x": 570,
+        "y": 560,
+        "wires": [
+            [
+                "1b8417cfdfe42836",
+                "aa401172eff80c5c"
+            ]
+        ]
+    },
+    {
+        "id": "1b8417cfdfe42836",
+        "type": "debug",
+        "z": "d1a571756048499d",
+        "name": "debug 13",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 580,
+        "y": 620,
+        "wires": []
+    },
+    {
+        "id": "aa401172eff80c5c",
+        "type": "function",
+        "z": "d1a571756048499d",
+        "name": "function 11",
+        "func": "// Recuperamos la información del jugador que guardamos al principio del flujo.\nconst infoJugador = msg.playerInfo;\n\n// Buscamos los datos específicos del jugador dentro de los detalles de la partida.\n// La variable 'participant' contendrá todas las estadísticas de nuestro jugador en esa partida.\nconst participante = msg.payload.info.participants.find(p => p.puuid === infoJugador.puuid);\n\n// Si por alguna razón no encontramos al participante, detenemos el flujo para evitar errores.\nif (!participante) {\n    node.error(\"No se encontraron los datos del participante en esta partida.\");\n    return null;\n}\n\n// Preparamos el mensaje final para enviarlo al nodo de InfluxDB.\n// El formato debe ser un array con dos objetos: el primero para los datos (fields)\n// y el segundo para las etiquetas (tags).\nmsg.payload = [\n    {\n        // === CAMPOS (FIELDS) ===\n        // Aquí van los datos numéricos que quieres medir y sobre los que harás cálculos.\n        asesinatos: participante.kills,\n        muertes: participante.deaths,\n        asistencias: participante.assists,\n        danoTotalACampeones: participante.totalDamageDealtToChampions,\n        oroGanado: participante.goldEarned,\n        puntuacionDeVision: participante.visionScore,\n        victoria: participante.win // Esto será un valor booleano (true o false)\n    },\n    {\n        // === ETIQUETAS (TAGS) ===\n \n        nombreInvocador: infoJugador.gameName,\n        tagInvocador: infoJugador.tagLine,\n        campeon: participante.championName,\n        rol: participante.role,\n        linea: participante.lane\n    }\n];\n\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 770,
+        "y": 560,
+        "wires": [
+            [
+                "dc695da09e0c2972",
+                "d74dc7c60f710956"
+            ]
+        ]
+    },
+    {
+        "id": "dc695da09e0c2972",
+        "type": "debug",
+        "z": "d1a571756048499d",
+        "name": "debug 14",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 960,
+        "y": 560,
+        "wires": []
+    },
+    {
+        "id": "d74dc7c60f710956",
+        "type": "influxdb out",
+        "z": "d1a571756048499d",
+        "influxdb": "1c5133f170702cb3",
+        "name": "Envio",
+        "measurement": "Top2",
+        "precision": "",
+        "retentionPolicy": "",
+        "database": "",
+        "precisionV18FluxV20": "ms",
+        "retentionPolicyV18Flux": "",
+        "org": "Somorrostro",
+        "bucket": "reto0Node",
+        "x": 940,
+        "y": 640,
+        "wires": []
+    },
+    {
+        "id": "1c5133f170702cb3",
+        "type": "influxdb",
+        "hostname": "127.0.0.1",
+        "port": "8086",
+        "protocol": "http",
+        "database": "database",
+        "name": "influxdb - Reto0",
+        "usetls": false,
+        "tls": "",
+        "influxdbVersion": "2.0",
+        "url": "http://influxdb:8086",
+        "timeout": "10",
+        "rejectUnauthorized": true
+    }
+]
